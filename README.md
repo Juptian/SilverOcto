@@ -1,2 +1,3 @@
-# SilverOcto
-SilverOcto is a discord bot created with Discord.JS
+<h1 align="center"> SilverOcto </h1>
+
+SilverOcto is a Discord bot made with Discord.JS.
