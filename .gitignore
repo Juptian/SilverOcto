@@ -1,3 +1,6 @@
+# Ignoring config files to keep things hidden
+.config
+
 # Logs
 logs
 *.log
