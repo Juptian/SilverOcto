@@ -1,6 +1,9 @@
 # Ignoring config files to keep things hidden
 .config
 
+# Other things added by Juptian
+package-lock.json
+
 # Logs
 logs
 *.log
