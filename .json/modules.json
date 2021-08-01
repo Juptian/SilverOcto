@@ -1,0 +1,8 @@
+{
+    "modules" : [
+        "General"
+    ],
+    "descriptions": [
+        "The general module includes the normal bot commands, such as things like the help command, userinfo command, etc."
+    ]
+}

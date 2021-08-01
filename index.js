@@ -1,9 +1,9 @@
 //---------//
 // MODULES //
 //---------// 
-const { channel } = require('diagnostics_channel');
 const Discord = require('discord.js');
 const fs = require('fs');
+
 //---------//
 //  FILES  //
 //---------//
@@ -16,8 +16,8 @@ let prefixes = require('./.json/prefixes.json');
 //---------//
 const bot = new Discord.Client({disableEveryone: true});
 const token = baseconfig.TOKEN;
-bot.commands = new Discord.Collection();
 
+bot.commands = new Discord.Collection();
 
 fs.readdir("./Commands/", (err, files) => {
     if(err) console.log(err);
@@ -32,7 +32,7 @@ fs.readdir("./Commands/", (err, files) => {
     commandFiles.forEach((file, i) => {
         let command = require(`./Commands/${file}`);
         console.log(`${file} loaded!`);
-        bot.commands.set(command.help.name, command);
+        bot.commands.set(command.help.name.toUpperCase(), command);
     })
     
     console.log("All command files loaded");
@@ -62,15 +62,17 @@ bot.on("message", async (message) => {
     if(message.channel.type == "dm") { return message.reply("I do not take personal messages, sorry"); }
     await CheckJSONFiles(message.guild.id);
     let guildID = message.guild.id;
-    let prefix = prefixes[guildID][1]; 
+    let prefix = prefixes[guildID][0]; 
     if(!message.content.startsWith(prefix)) { return; }
 
     let splitMessage = message.content.split(" ");
     let command = splitMessage[0].slice(prefix.length);
-    let commandToRun = bot.commands.get(command);
+    let commandToRun = bot.commands.get(command.toUpperCase());
     let args = splitMessage.slice(1);
     if(commandToRun) return commandToRun.run(bot, message, args);
     message.reply(`The ${command} command does not exist`);
 })
 
 bot.login(token);
+
+module.exports = { bot };
