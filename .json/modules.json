@@ -1,8 +1,10 @@
 {
     "modules" : [
-        "General"
+        "General",
+        "Moderation"
     ],
     "descriptions": [
-        "The general module includes the normal bot commands, such as things like the help command, userinfo command, etc."
+        "The general module includes the normal bot commands, such as things like the help command, userinfo command, etc.",
+        "The moderation module includes commands to moderate users such as kick, mute, warn, ban."
     ]
 }
