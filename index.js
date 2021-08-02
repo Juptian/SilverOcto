@@ -16,10 +16,20 @@ let prefixes = require('./.json/prefixes.json');
 //---------//
 const bot = new Discord.Client({disableEveryone: true});
 const token = baseconfig.TOKEN;
+const jsonPath = './.json/';
+const configPath = './.config/';
+const commandPath = './Commands/';
 
 bot.commands = new Discord.Collection();
 
-fs.readdir("./Commands/", (err, files) => {
+let loadAliases = async(file, command) => {
+    let aliases = command.help.aliases.split(", ");
+    for(let i = 0; i < aliases.length; i++) {
+        await bot.commands.set(aliases[i].toUpperCase(), command);
+        console.log(`${file} loaded with alias '${aliases[i]}'!`);
+    }
+}
+fs.readdir(commandPath, (err, files) => {
     if(err) console.log(err);
 
     let commandFiles = files.filter(f => f.substr(f.length - 2) === "js");
@@ -30,28 +40,32 @@ fs.readdir("./Commands/", (err, files) => {
 
     // Foreach loop here for simplicity.
     commandFiles.forEach((file, i) => {
-        let command = require(`./Commands/${file}`);
-        console.log(`${file} loaded!`);
+        let command = require(`${commandPath}${file}`);
         bot.commands.set(command.help.name.toUpperCase(), command);
+
+        if(command.help.aliases != "") {
+            loadAliases(file, command);
+        } else {
+            console.log(`${file} loaded!`);
+        }
     })
     
-    console.log("All command files loaded");
 })
+
 let CheckJSONFiles = (guildID) => {
     if(!prefixes[guildID]) {
-        console.log("no prefix");
         prefixes[guildID] = [ baseconfig.prefix ];
         let temp = JSON.stringify(prefixes, null, 4);
-        fs.writeFileSync('./.json/prefixes.json', temp);
+        fs.writeFileSync(`${jsonPath}prefixes.json`, temp);
     }
 
     if(!infractions[guildID]) {
-        console.log("no infractions");
-        infractions[guildID] = [ ];
+        infractions[guildID] = [ 0 ];
         let temp = JSON.stringify(infractions, null, 4);
-        fs.writeFileSync('./.json/infractions.json', temp);
+        fs.writeFileSync(`${jsonPath}infractions.json`, temp);
     }
 }
+
 bot.on("ready", async () => {
     console.log(`${bot.user.username} is online successfully`);
     bot.user.setActivity("you", {type: 'WATCHING'});
@@ -60,8 +74,10 @@ bot.on("ready", async () => {
 bot.on("message", async (message) => {
     if(message.author.bot) { return; }
     if(message.channel.type == "dm") { return message.reply("I do not take personal messages, sorry"); }
-    await CheckJSONFiles(message.guild.id);
+    
     let guildID = message.guild.id;
+    await CheckJSONFiles(guildID);
+
     let prefix = prefixes[guildID][0]; 
     if(!message.content.startsWith(prefix)) { return; }
 
@@ -75,4 +91,4 @@ bot.on("message", async (message) => {
 
 bot.login(token);
 
-module.exports = { bot };
+module.exports = { bot, commandPath, jsonPath, configPath };

@@ -42,6 +42,7 @@ module.exports.run = async(bot, message, args) => {
     let moduleSelected = false;
     let chosenModule = null;
     for(var i = 0; i < modules.length; i++) {
+        if(args.length == 0) { break; }
         if(args[0].toUpperCase() == modules[i].toUpperCase()) {
             moduleSelected = true;
             chosenModule = modules[i];
